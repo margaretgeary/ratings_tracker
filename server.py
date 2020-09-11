@@ -14,7 +14,10 @@ app.jinja_env.undefined = StrictUndefined
 # Replace this with routes and view functions!
 
 @app.route('/')
-def homepage():
+def homepage():    
+    
+    if "login_email" not in session:
+        session["login_email"] = None
     return render_template("homepage.html")
 
 @app.route('/movies')
@@ -46,21 +49,25 @@ def register_user():
 
     user_email = request.form.get('email')
     user_password = request.form.get('password')
+    print("I am in register_user")
 
     user = crud.get_user_by_email(user_email)
 
     if user:
         flash("You can't create an account with that email")
+        return redirect('/users')
     else:
         crud.create_user(user_email, user_password)
         flash("Successfully created account!")
-    return redirect('/')
+        return redirect('/')
 
 @app.route('/', methods=['POST'])
 def login_user():
 
     login_email = request.form.get('login_email')
     login_password = request.form.get('login_password')
+    print(login_email, login_password)
+    print("I AM HERE")
 
     user = crud.get_user_by_email(login_email)
     print(user)
